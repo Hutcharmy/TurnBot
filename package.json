@@ -1,0 +1,17 @@
+{
+  "name": "turnbotjs",
+  "version": "1.0.0",
+  "description": "An app to track turns in Slack board games",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Nick Hutchison",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3"
+  }
+}
