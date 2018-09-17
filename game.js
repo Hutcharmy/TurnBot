@@ -14,7 +14,7 @@ class Game {
       }
     }
 
-    
+
   }
   setName(name) {
     this.name= name;
@@ -36,6 +36,16 @@ class Game {
   }
   endTurn(){
     this.currentPlayer++;
+    if (this.currentPlayer >= this.players.length) {
+      this.currentPlayer = 0;
+    }
+    fs.writeFile('prevGame.json', JSON.stringify(this), (err) =>{
+      if (err) throw err;
+    });
+    return this.players[this.currentPlayer];
+  }
+  pass() {
+    this.players.splice(this.currentPlayer, 1);
     if (this.currentPlayer >= this.players.length) {
       this.currentPlayer = 0;
     }

@@ -56,6 +56,26 @@ app.post('/endturn', (req, res) =>{
     });
   }
 });
+app.post('/pass', (req, res) =>{
+  console.log('POST /pass');
+  const sender = req.body.user_id;
+  const currentPlayer = game.getCurrentUser();
+  const playerAt = currentPlayer.substring(currentPlayer.indexOf('@')+1, currentPlayer.indexOf('|'));
+  let nextPlayer;
+  if (sender == playerAt){
+    nextPlayer = game.pass();
+    res.status(200).json({
+      response_type: 'in_channel',
+      text:nextPlayer + ' is up!'
+    });
+  }
+  else {
+    res.status(200).json({
+      response_type: 'in_channel',
+      text:'You cannot end another player\'s turn. ' + currentPlayer + 'must end their turn'
+    });
+  }
+});
 app.post('/whoisup', (req, res) =>{
   console.log('POST /whoisup');
   res.status(200).json({
