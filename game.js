@@ -1,19 +1,29 @@
 const fs = require('fs');
 class Game {
-  constructor() {
-    const data = JSON.parse(fs.readFileSync('prevGame.json'));
-    if (data.name) {
-      this.name = data.name;
+  constructor(name = null, channelId = null, teamId = null, players = null, currentPlayer = null) {
+    if (name) {
+      this.name = name;
     }
-    if (data.players && data.players.length > 0) {
-      this.players = data.players;
-      if (data.currentPlayer) {
-        this.currentPlayer = data.currentPlayer;
+    if(teamId){
+      this.teamId = teamId;
+    }
+    else {
+      throw new Error('Team ID not found');
+    }
+    if(channelId){
+      this.channelId = channelId;
+    }
+    else {
+      throw new Error('Channel ID not found');
+    }
+    if (players && players.length > 0) {
+      this.players = players;
+      if (currentPlayer) {
+        this.currentPlayer = currentPlayer;
       } else {
         this.currentPlayer = 0;
       }
     }
-
 
   }
   setName(name) {
@@ -27,21 +37,26 @@ class Game {
   setTurnOrder(players) {
     this.players = [];
     for (var player of players) {
-      this.players.push(player);
+      if(player && player.trim() != ''){
+        this.players.push(player);
+      }
     }
     this.currentPlayer = 0;
     fs.writeFile('prevGame.json', JSON.stringify(this), (err) =>{
       if (err) throw err;
     });
   }
+  getChannelAndTeam() {
+    return {
+      channelId: this.channelId, 
+      teamId: this.teamId
+    };
+  }
   endTurn(){
     this.currentPlayer++;
     if (this.currentPlayer >= this.players.length) {
       this.currentPlayer = 0;
     }
-    fs.writeFile('prevGame.json', JSON.stringify(this), (err) =>{
-      if (err) throw err;
-    });
     return this.players[this.currentPlayer];
   }
   pass() {
@@ -49,9 +64,6 @@ class Game {
     if (this.currentPlayer >= this.players.length) {
       this.currentPlayer = 0;
     }
-    fs.writeFile('prevGame.json', JSON.stringify(this), (err) =>{
-      if (err) throw err;
-    });
     return this.players[this.currentPlayer];
   }
   getCurrentUser(){
