@@ -1,4 +1,3 @@
-const fs = require('fs');
 class Game {
   constructor(name = null, channelId = null, teamId = null, players = null, currentPlayer = null) {
     if (name) {
@@ -30,9 +29,6 @@ class Game {
     this.name= name;
     this.currentPlayer = 0;
     this.players = [];
-    fs.writeFile('prevGame.json', JSON.stringify(this), (err) =>{
-      if (err) throw err;
-    });
   }
   setTurnOrder(players) {
     this.players = [];
@@ -42,9 +38,6 @@ class Game {
       }
     }
     this.currentPlayer = 0;
-    fs.writeFile('prevGame.json', JSON.stringify(this), (err) =>{
-      if (err) throw err;
-    });
   }
   getChannelAndTeam() {
     return {
