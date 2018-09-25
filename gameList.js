@@ -1,14 +1,16 @@
 const fs = require('fs');
-const Game = require('game');
+const Game = require('./game');
 class GameList {
   constructor() {
-    const data = fs.readFileSync('prevGame.json');
-    if(data){
-      const gameList = JSON.stringify(data);
-      for(let game of gameList) {
-        this.gameList.push(new Game(game.name, game.channelId, game.teamId, game.players, game.currentPlayer));
+    fs.readFile('./prevGame.json', 'utf8', (err, data) => {
+      if(data){
+        this.gameList = [];
+        const gameList = JSON.parse(data);
+        for(let game of gameList.gameList) {
+          this.gameList.push(new Game(game.name, game.channelId, game.teamId, game.players, game.currentPlayer));
+        }
       }
-    }
+    });
   }
   getGameByIds(channelId, teamId) {
     return this.gameList.find((game) =>{
@@ -16,10 +18,10 @@ class GameList {
       return gameIds.channelId == channelId && gameIds.teamId == teamId;
     });
   }
-  addNewGame(name, channelId, teamId, players) {
-    this.gameList.push(new Game(name, channelId, teamId, players));
+  addNewGame(name, channelId, teamId) {
+    this.gameList.push(new Game(name, channelId, teamId));
     this.writeGames();
-    return this.gamesList[this.gamesList.length - 1];
+    return this.gameList[this.gameList.length - 1];
   }
   writeGames() {
     fs.writeFile('prevGame.json', JSON.stringify(this), (err) =>{
