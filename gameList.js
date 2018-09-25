@@ -19,7 +19,15 @@ class GameList {
     });
   }
   addNewGame(name, channelId, teamId) {
-    this.gameList.push(new Game(name, channelId, teamId));
+    const sameGame = this.gameList.find((game)=>{
+      var ids = game.getChannelAndTeam();
+      return ids.channelId == channelId && ids.teamId == teamId;
+    });
+    if(sameGame) {
+      sameGame.setName(name);
+    } else {
+      this.gameList.push(new Game(name, channelId, teamId));
+    }
     this.writeGames();
     return this.gameList[this.gameList.length - 1];
   }
