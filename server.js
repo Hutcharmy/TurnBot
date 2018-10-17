@@ -1,20 +1,40 @@
+require('dotenv').config();
+const request = require('request');
 const express = require('express');
-//const axios = require('axios');
 const bodyParser = require('body-parser');
 const app = express();
+const fs = require('fs');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static('public'));
 
 const GameList = require('./gameList');
 const games = new GameList();
 
-// const webhook = 'https://hooks.slack.com/services/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';
-// app.get('/', (req, res) =>{
-//   axios.post(webhook, {
-//     text: 'Hello World'
-//   });
-//   res.status(200).send();
-// });
+app.get('/auth/redirect', (req, res) => {
+  const options = {
+    uri: 'https://slack.com/api/oauth.access?code=' 
+       + req.query.code + '&client_id=' 
+       + process.env.CLIENT_ID + '&client_secret=' 
+       + process.env.CLIENT_SECRET+'&redirect_uri=http://cse252.spikeshroud.com:8000/auth/redirect',
+    method: 'GET'
+  };
+  request(options, (error, response, body) => {
+    const JSONresponse = JSON.parse(body);
+    if (!JSONresponse.ok) {
+      console.log(JSONresponse);
+      res.send('Error encountered: \n' + JSON.stringify(JSONresponse)).status(200).end();
+    } else {
+      console.log(JSONresponse);
+      fs.appendFile('Authorizations.json', JSONresponse, (err) => {
+        if (err) {console.log(err);}
+        return;
+      });
+      res.send('Success!');
+    }
+  });
+});
 app.post('/newgame', (req, res)=>{
   console.log('Recieved request for new game with text: ' + req.body.text);
   const newGame = games.addNewGame(req.body.text, req.body.channel_id, req.body.team_id);
